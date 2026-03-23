@@ -1,0 +1,20 @@
+/* Site stylesheet (copied/merged from existing styles) */
+:root{
+  --bg:#f6f8fb;
+  --card:#ffffff;
+  --accent:#2563eb;
+  --muted:#6b7280;
+  --radius:8px;
+}
+body{ font-family: Inter, Roboto, Arial, sans-serif; background: var(--bg); color:#111827; margin:0; padding:24px; }
+.container{ max-width:900px; margin:0 auto; }
+.card{ background:var(--card); padding:18px; border-radius:var(--radius); box-shadow:0 1px 3px rgba(15,23,42,0.04); }
+.page-title{ margin:0 0 12px 0; font-size:1.5rem; }
+form label{ display:block; margin:8px 0; }
+input[type="text"], input[type="password"], input[type="number"], textarea, select{ width:100%; padding:8px 10px; border:1px solid #e5e7eb; border-radius:6px; box-sizing:border-box; }
+button{ background:var(--accent); color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+.nav{ display:flex; gap:12px; align-items:center; }
+.muted{ color:var(--muted); }
+a{ color:var(--accent); text-decoration:none; }
+table{ width:100%; border-collapse:collapse; margin-top:12px; }
+th, td{ padding:8px 10px; border-bottom:1px solid #edf2f7; text-align:left; }

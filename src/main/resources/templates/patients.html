@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Pacientes</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    </head>
+<body>
+<main class="card">
+    <h1 class="page-title">Listado de Pacientes</h1>
+
+    <div>
+        <a th:href="@{/patients/new}" sec:authorize="isAuthenticated()">Registrar nuevo paciente</a>
+        <span sec:authorize="!isAuthenticated()" class="muted">(Debes iniciar sesión para registrar pacientes)</span>
+    </div>
+
+    <table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Especie</th>
+        <th>Raza</th>
+        <th>Edad</th>
+        <th>Dueño</th>
+        <th>Acciones</th>
+    </tr>
+    
+</thead>
+    <tbody>
+    <tr th:each="p : ${patients}">
+            <td th:text="${p.id}"></td>
+        <td th:text="${p.name}"></td>
+        <td th:text="${p.species}"></td>
+        <td th:text="${p.breed}"></td>
+        <td th:text="${p.age}"></td>
+        <td th:text="${p.ownerName}"></td>
+        <td>
+            <a th:href="@{'/patients/delete/' + ${p.id}}" sec:authorize="hasAnyRole('VET','ADMIN')">Eliminar</a>
+            <span sec:authorize="!hasAnyRole('VET','ADMIN')" class="muted">-</span>
+        </td>
+    </tr>
+    </tbody>
+</body>
+</table>
+
+    <div>
+ 
+      <a th:href="@{/}">Volver al inicio</a>
+   
+</div>
+</main>
+</div>
+
+</body>
+</html>

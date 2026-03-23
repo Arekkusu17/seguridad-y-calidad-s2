@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Citas</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+</head>
+<body>
+<main class="card">
+    <h1 class="page-title">Listado de Citas</h1>
+
+    <div>
+        <a th:href="@{/appointments/new}" sec:authorize="isAuthenticated()">Agendar nueva cita</a>
+    </div>
+
+    <table>
+   
+<thead>
+    <tr>
+        <th>ID</th>
+        <th>Paciente ID</th>
+        <th>Fecha y Hora</th>
+        <th>Motivo</th>
+        <th>Veterinario</th>
+       
+<th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="a : ${appointments}">
+        <td th:text="${a.id}"></td>
+        <td th:text="${a.patientId}"></td>
+        <td th:text="${a.dateTime != null ? a.dateTime : '-'}"></td>
+       
+<td th:text="${a.reason}"></td>
+        <td th:text="${a.veterinarian}"></td>
+    
+   <td>
+            <a th:href="@{'/appointments/delete/' + ${a.id}}" sec:authorize="hasAnyRole('VET','ADMIN')">Eliminar</a>
+            <span sec:authorize="!hasAnyRole('VET','ADMIN')" class="muted">-</span>
+        </td>
+    </tr>
+   
+</tbody>
+</body>
+    </table>
+
+    <div style="margin-top:12px">
+        <a th:href="@{/}">Volver al inicio</a>
+    </div>
+    </main>
+</div>
+
+</body>
+</html>

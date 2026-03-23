@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Registrar Paciente</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+</head>
+<body>
+<div class="container">
+   
+<main class="card">
+        <h1 class="page-title">Registrar Paciente</h1>
+
+       
+<form th:action="@{/patients}" th:object="${patient}" method="post" sec:authorize="isAuthenticated()">
+    <div>
+        <label>Nombre: <input type="text" th:field="*{name}"/></label>
+    </div>
+    <div>
+        <label>Especie: <input type="text" th:field="*{species}"/></label>
+    </div>
+    <div>
+       
+<label>Raza: <input type="text" th:field="*{breed}"/></label>
+    </div>
+    <div>
+        <label>Edad: <input type="number" th:field="*{age}"/></label>
+    </div>
+    <div>
+        <label>Dueño: <input type="text" th:field="*{ownerName}"/></label>
+    </div>
+   
+<div>
+        <button type="submit">Guardar</button>
+    </div>
+</body>
+       
+</form>
+
+        <div style="margin-top:12px">
+            <a th:href="@{/patients}">Volver al listado</a>
+            <div sec:authorize="!isAuthenticated()" class="muted">No tienes permiso para crear pacientes.</div>
+        </div>
+   
+</main>
+</div>
+
+</body>
+</html>

@@ -2,8 +2,9 @@ package com.example.backend;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@Controller
+@RestController
 public class LoginController {
 
     @Autowired
@@ -43,22 +44,19 @@ public class LoginController {
             throw new RuntimeException("Missing credentials");
         }
 
-        // authenticate using AuthenticationManager so we establish a session for form logins
-        AuthenticationManager authManager = authenticationConfiguration.getAuthenticationManager();
-        Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(uname, pwd));
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        // Persist the security context in the HTTP session so subsequent requests using JSESSIONID are authenticated
-        request.getSession(true).setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-
-        String token = jwtAuthtenticationConfig.getJWTToken(uname);
-
-        String accept = request.getHeader("Accept");
-        if (accept != null && accept.contains("text/html")) {
-            // browser form submit -> redirect to patients page
-            return "redirect:/patients";
+        // authenticate via AuthenticationManager to establish server-side SecurityContext (create session)
+        try {
+            AuthenticationManager authManager = authenticationConfiguration.getAuthenticationManager();
+            UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(uname, pwd);
+            Authentication auth = authManager.authenticate(authReq);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            // ensure HTTP session is created so Thymeleaf sec:authorize can read SecurityContext
+            request.getSession(true);
+        } catch (AuthenticationException ex) {
+            return ResponseEntity.status(401).body("Invalid credentials");
         }
 
-        // API client (fetch) -> return token string
+        String token = jwtAuthtenticationConfig.getJWTToken(uname);
         return ResponseEntity.ok(token);
     }
 

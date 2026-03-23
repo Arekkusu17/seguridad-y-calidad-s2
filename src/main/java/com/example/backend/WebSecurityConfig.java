@@ -24,8 +24,8 @@ class WebSecurityConfig{
                         .authorizeHttpRequests((requests) -> requests
                                 .requestMatchers("/", "/home", "/login", "/error", "/favicon.ico").permitAll()
                                 .requestMatchers("/css/**", "/js/**", "/images/**", "/style.css", "/login.css", "/webjars/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/patients", "/appointments").authenticated()
-                                .requestMatchers(HttpMethod.GET, "/patients/new", "/appointments/new").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/patients", "/appointments").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/patients/new", "/appointments/new").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/patients").hasAnyRole("USER", "VET", "ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/appointments").authenticated()
                                 // Patient API

@@ -15,7 +15,9 @@
 <nav>
                 <a th:href="@{/}">Inicio</a>
                 <span sec:authorize="isAuthenticated()"> | <a th:href="@{/patients}">Pacientes</a></span>
-        <span sec:authorize="isAuthenticated()"> | <a th:href="@{/appointments}">Citas</a></span>
+            <span sec:authorize="isAuthenticated()"> | <a th:href="@{/appointments}">Citas</a></span>
+                <!-- Client-side links shown when JWT present (for token-based login) -->
+                <span id="client-auth-links" style="display:none"> | <a href="/patients">Pacientes</a> | <a href="/appointments">Citas</a></span>
             </nav>
             <div>
                 <span sec:authorize="isAuthenticated()">Usuario: <strong sec:authentication="name"></strong></span>
@@ -26,6 +28,10 @@
                         <button type="submit">Logout</button>
                     </form>
                 </span>
+                <!-- Client-side equivalents for token-based auth -->
+                <span id="client-user" style="display:none">Usuario: <strong id="client-username"></strong></span>
+                <span id="client-login" style="display:none"> <a href="/login">Login</a> </span>
+                <button id="client-logout" style="display:none">Logout</button>
           
   </div>
         </div>
@@ -35,7 +41,55 @@
         <h2 class="page-title">Seguridad implementada con Spring Security</h2>
         <p sec:authorize="isAuthenticated()"><a th:href="@{/patients}">Gestionar Pacientes</a></p>
         <p sec:authorize="isAuthenticated()"><a th:href="@{/appointments}">Gestionar Citas</a></p>
+        <p id="client-manage-patients" style="display:none"><a href="/patients">Gestionar Pacientes</a></p>
+        <p id="client-manage-appointments" style="display:none"><a href="/appointments">Gestionar Citas</a></p>
     </main>
 </div>
-</body>
+    <script>
+        // Show client-side links when JWT token is present (single-page token-based auth)
+        (function(){
+            function parseJwtPayload(token) {
+                try {
+                    if (!token) return null;
+                    token = token.replace(/^Bearer\s+/i, '');
+                    const parts = token.split('.');
+                    if (parts.length < 2) return null;
+                    const payload = parts[1];
+                    // base64url -> base64
+                    const b64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+                    const json = decodeURIComponent(atob(b64).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                    return JSON.parse(json);
+                } catch (e) { return null; }
+            }
+
+            try {
+                const token = localStorage.getItem('jwt');
+                if (token && token.length>0) {
+                    const els = ['client-auth-links','client-manage-patients','client-manage-appointments','client-user','client-logout'];
+                    els.forEach(id=>{ const e=document.getElementById(id); if (e) e.style.display=''; });
+
+                    // populate username from token subject (sub)
+                    const payload = parseJwtPayload(token);
+                    const name = (payload && (payload.sub || payload.name)) ? (payload.sub || payload.name) : '';
+                    const nameEl = document.getElementById('client-username');
+                    if (nameEl) nameEl.innerText = name;
+
+                    // hide client login link
+                    const loginEl = document.getElementById('client-login'); if (loginEl) loginEl.style.display='none';
+
+                    // client logout clears JWT and reloads
+                    const logoutBtn = document.getElementById('client-logout');
+                    if (logoutBtn) logoutBtn.addEventListener('click', function(){ localStorage.removeItem('jwt'); window.location.href='/'; });
+                } else {
+                    // show client login link when not authenticated
+                    const loginEl = document.getElementById('client-login'); if (loginEl) loginEl.style.display='';
+                }
+            } catch(e){/* ignore */}
+        })();
+    </script>
+    </body>
+    </html>
+
 </html>

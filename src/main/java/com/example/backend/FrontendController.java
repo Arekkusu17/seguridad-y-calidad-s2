@@ -20,11 +20,6 @@ public class FrontendController {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    @GetMapping({"/", "/login-ui"})
-    public String loginPage() {
-        return "login";
-    }
-
     @GetMapping("/")
     public String homePage(Model model) {
         model.addAttribute("name", "Veterinary System");

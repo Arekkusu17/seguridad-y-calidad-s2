@@ -50,14 +50,31 @@
     function getToken() { return localStorage.getItem('jwt'); }
     function authHeader() { const t=getToken(); return t? { 'Authorization': t } : {}; }
 
+    // Capitalize helper (only first word)
+    function capitalizeFirst(s){ if(!s) return ''; s = (s||'').trim(); return s.charAt(0).toUpperCase() + s.slice(1); }
+
+    // Capitalize patient option texts on load (only first word)
+    (function(){
+        try{
+            const sel = document.querySelector('select[name="patientId"]');
+            if(sel){ Array.from(sel.options).forEach(opt=>{ opt.text = capitalizeFirst(opt.text); }); }
+        }catch(e){}
+    })();
+
     document.getElementById('appointmentForm').addEventListener('submit', async function(e){
         e.preventDefault();
         const f = e.target;
+        // Capitalize reason and veterinarian (only first word) before sending
+        const reasonEl = f.querySelector('input[name="reason"]');
+        const vetEl = f.querySelector('input[name="veterinarian"]');
+        const reasonVal = capitalizeFirst((reasonEl && reasonEl.value) ? reasonEl.value : ''); if(reasonEl) reasonEl.value = reasonVal;
+        const vetVal = capitalizeFirst((vetEl && vetEl.value) ? vetEl.value : ''); if(vetEl) vetEl.value = vetVal;
+
         const data = {
             patientId: parseInt(f.querySelector('select[name="patientId"]').value, 10),
             appointmentDateTime: f.querySelector('input[name="dateTimeStr"]').value,
-            reason: f.querySelector('input[name="reason"]').value,
-            veterinarian: f.querySelector('input[name="veterinarian"]').value
+            reason: reasonVal,
+            veterinarian: vetVal
         };
 
         const headers = Object.assign({'Content-Type':'application/json'}, authHeader());

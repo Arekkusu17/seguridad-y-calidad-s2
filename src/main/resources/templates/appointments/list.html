@@ -14,7 +14,19 @@
     </div>
 
     <h2>Existing appointments</h2>
-    <ul id="list"></ul>
+    <table id="list" class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Motivo</th>
+                <th>Veterinario</th>
+                <th>Paciente</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
     <nav>
         <a href="/patients">Pacientes</a>
     </nav>
@@ -23,12 +35,38 @@
     function getToken() { return localStorage.getItem('jwt'); }
     function authHeader() { const t=getToken(); return t? { 'Authorization': t } : {}; }
 
+    function splitDateTime(dt){
+        // returns [date, time] where date is YYYY-MM-DD and time is HH:mm
+        if (!dt) return ['', ''];
+        let datePart = '';
+        let timePart = '';
+        if (dt.includes('T')){
+            [datePart, timePart] = dt.split('T');
+        } else if (dt.includes(' ')){
+            [datePart, timePart] = dt.split(' ');
+        } else {
+            // fallback: try to parse as time only
+            return ['', dt.substring(0,5)];
+        }
+        if (!timePart) return [datePart || '', ''];
+        return [datePart, timePart.substring(0,5)];
+    }
+
     async function loadAppointments(){
         const res = await fetch('/api/appointments', { headers: Object.assign({'Accept':'application/json'}, authHeader()) });
-        if (!res.ok) { document.getElementById('list').innerText = 'Error: '+res.status; return; }
+        const table = document.getElementById('list');
+        const tbody = table.querySelector('tbody');
+        tbody.innerHTML = '';
+        if (!res.ok) { const tr=document.createElement('tr'); const td=document.createElement('td'); td.colSpan=5; td.innerText = 'Error: '+res.status; tr.appendChild(td); tbody.appendChild(tr); return; }
         const arr = await res.json();
-        const ul = document.getElementById('list'); ul.innerHTML='';
-        arr.forEach(p=>{ const li=document.createElement('li'); li.innerText = `${p.id} - ${p.appointmentDateTime} ${p.reason} (${p.veterinarian})`; ul.appendChild(li); });
+        arr.forEach(p=>{
+            const tr = document.createElement('tr');
+            const patientName = (p.patient && p.patient.name) ? p.patient.name : (p.patientName || '');
+            const [dateStr, timeStr] = splitDateTime(p.appointmentDateTime || '');
+            const cells = [p.id, dateStr, timeStr, p.reason || '', p.veterinarian || '', patientName];
+            cells.forEach(c=>{ const td=document.createElement('td'); td.innerText = c; tr.appendChild(td); });
+            tbody.appendChild(tr);
+        });
     }
 
     loadAppointments();

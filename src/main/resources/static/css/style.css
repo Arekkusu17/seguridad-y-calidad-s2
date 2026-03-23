@@ -18,3 +18,13 @@ button{ background:var(--accent); color:white; border:none; padding:8px 12px; bo
 a{ color:var(--accent); text-decoration:none; }
 table{ width:100%; border-collapse:collapse; margin-top:12px; }
 th, td{ padding:8px 10px; border-bottom:1px solid #edf2f7; text-align:left; }
+
+/* Table utility styles */
+.data-table{ width:100%; border-collapse:collapse; margin-top:12px; font-size:0.95rem; }
+.data-table thead th{ background:linear-gradient(180deg, #f8fafc, #f1f5f9); color:#0f172a; font-weight:600; border-bottom:2px solid #e6eef8; }
+.data-table tbody tr:nth-child(even){ background:#fbfdff; }
+.data-table tbody tr:hover{ background:#f1f9ff; }
+.data-table td, .data-table th{ padding:10px 12px; border-bottom:1px solid #eef2f6; }
+.data-table .nowrap{ white-space:nowrap; }
+.table-actions{ display:flex; gap:8px; align-items:center; }
+.table-empty{ color:var(--muted); padding:12px; text-align:center; }

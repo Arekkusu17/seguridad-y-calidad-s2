@@ -43,12 +43,25 @@
     document.getElementById('patientForm').addEventListener('submit', async function(e){
         e.preventDefault();
         const f = e.target;
+        // Capitalize only the first word of relevant string fields before sending
+        function capitalizeFirst(s){ if(!s) return ''; s = s.trim(); return s.charAt(0).toUpperCase() + s.slice(1); }
+
+        const nameEl = f.querySelector('input[name="name"]');
+        const speciesEl = f.querySelector('input[name="species"]');
+        const breedEl = f.querySelector('input[name="breed"]');
+        const ownerEl = f.querySelector('input[name="ownerName"]');
+
+        const nameVal = capitalizeFirst(nameEl.value); nameEl.value = nameVal;
+        const speciesVal = capitalizeFirst(speciesEl.value); speciesEl.value = speciesVal;
+        const breedVal = capitalizeFirst(breedEl.value); breedEl.value = breedVal;
+        const ownerVal = capitalizeFirst(ownerEl.value); ownerEl.value = ownerVal;
+
         const data = {
-            name: f.querySelector('input[name="name"]').value,
-            species: f.querySelector('input[name="species"]').value,
-            breed: f.querySelector('input[name="breed"]').value,
+            name: nameVal,
+            species: speciesVal,
+            breed: breedVal,
             age: parseInt(f.querySelector('input[name="age"]').value || '0'),
-            ownerName: f.querySelector('input[name="ownerName"]').value
+            ownerName: ownerVal
         };
 
         const headers = Object.assign({'Content-Type':'application/json'}, authHeader());

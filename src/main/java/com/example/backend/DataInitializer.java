@@ -3,12 +3,13 @@ package com.example.backend;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.example.backend.model.User;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     @Autowired
-    private UserRepository userRepository;
+    private com.example.backend.repository.UserRepository userRepository;
 
     @Autowired
     private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;

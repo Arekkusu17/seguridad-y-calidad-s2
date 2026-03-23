@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Registrar Paciente</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+   
+<main class="card">
+    <h1 class="page-title">Registrar Paciente</h1>
+
+    <form id="patientForm" method="post">
+        <div>
+            <label>Nombre: <input type="text" name="name"/></label>
+        </div>
+        <div>
+            <label>Especie: <input type="text" name="species"/></label>
+        </div>
+        <div>
+            <label>Raza: <input type="text" name="breed"/></label>
+        </div>
+        <div>
+            <label>Edad: <input type="number" name="age"/></label>
+        </div>
+        <div>
+            <label>Dueño: <input type="text" name="ownerName"/></label>
+        </div>
+        <div>
+            <button type="submit">Guardar</button>
+        </div>
+    </form>
+
+    <div id="patient-auth-prompt" style="display:none; margin-top:12px">
+        <div class="muted">No estás autenticado. Por favor <a href="/login">inicia sesión</a> o usa el token para la API.</div>
+    </div>
+
+    <script>
+    function getToken() { return localStorage.getItem('jwt'); }
+    function authHeader() { const t=getToken(); return t? { 'Authorization': t } : {}; }
+
+    document.getElementById('patientForm').addEventListener('submit', async function(e){
+        e.preventDefault();
+        const f = e.target;
+        const data = {
+            name: f.querySelector('input[name="name"]').value,
+            species: f.querySelector('input[name="species"]').value,
+            breed: f.querySelector('input[name="breed"]').value,
+            age: parseInt(f.querySelector('input[name="age"]').value || '0'),
+            ownerName: f.querySelector('input[name="ownerName"]').value
+        };
+
+        const headers = Object.assign({'Content-Type':'application/json'}, authHeader());
+        const res = await fetch('/api/patients', { method: 'POST', headers, body: JSON.stringify(data) });
+        if (!res.ok) {
+            const txt = await res.text();
+            alert('Error creating patient: ' + res.status + ' ' + txt);
+            return;
+        }
+        window.location.href = '/patients';
+    });
+
+    // Show/hide form based on presence of JWT
+    (function(){
+        try{
+            const token = getToken();
+            const form = document.getElementById('patientForm');
+            const prompt = document.getElementById('patient-auth-prompt');
+            if (token && token.length>0) {
+                if (form) form.style.display = '';
+                if (prompt) prompt.style.display = 'none';
+            } else {
+                if (form) form.style.display = 'none';
+                if (prompt) prompt.style.display = '';
+            }
+        }catch(e){}
+    })();
+    </script>
+</main>
+</body>
+</html>

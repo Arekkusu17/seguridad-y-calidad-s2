@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.backend.auth;
 import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

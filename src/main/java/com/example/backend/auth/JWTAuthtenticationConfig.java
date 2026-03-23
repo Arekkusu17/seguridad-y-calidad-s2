@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.backend.auth;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.context.annotation.Configuration;

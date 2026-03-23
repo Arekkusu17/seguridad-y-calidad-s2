@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Agendar Cita</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <main class="card">
+        <h1 class="page-title">Agendar Cita</h1>
+
+        <form id="appointmentForm" th:action="@{/appointments}" th:object="${appointment}" method="post">
+    <div>
+    
+   <label>Paciente:
+            <select name="patientId">
+               
+<option th:each="p : ${patients}" th:value="${p.id}" th:text="${p.name}"></option>
+  
+         </select>
+        </label>
+    </div>
+    <div>
+        <label>Fecha y hora: <input type="datetime-local" name="dateTimeStr"/></label>
+    </div>
+   
+<div>
+        <label>Motivo: <input type="text" th:field="*{reason}"/></label>
+    </div>
+    <div>
+        <label>Veterinario: <input type="text" th:field="*{veterinarian}"/></label>
+    </div>
+    <div>
+        <button type="submit">Guardar</button>
+    </div>
+    </form>
+
+    <div id="appointment-auth-prompt" style="display:none; margin-top:12px">
+        <div class="muted">No estás autenticado. Por favor <a href="/login">inicia sesión</a> o usa el token para la API.</div>
+    </div>
+
+    <div style="margin-top:12px">
+        <a th:href="@{/appointments}">Volver al listado</a>
+    </div>
+    </main>
+    </div>
+
+    <script>
+    function getToken() { return localStorage.getItem('jwt'); }
+    function authHeader() { const t=getToken(); return t? { 'Authorization': t } : {}; }
+
+    document.getElementById('appointmentForm').addEventListener('submit', async function(e){
+        e.preventDefault();
+        const f = e.target;
+        const data = {
+            patientId: parseInt(f.querySelector('select[name="patientId"]').value, 10),
+            appointmentDateTime: f.querySelector('input[name="dateTimeStr"]').value,
+            reason: f.querySelector('input[name="reason"]').value,
+            veterinarian: f.querySelector('input[name="veterinarian"]').value
+        };
+
+        const headers = Object.assign({'Content-Type':'application/json'}, authHeader());
+        const res = await fetch('/api/appointments', { method: 'POST', headers, body: JSON.stringify(data) });
+        if (!res.ok) {
+            const txt = await res.text();
+            alert('Error creating appointment: ' + res.status + ' ' + txt);
+            return;
+        }
+        window.location.href = '/appointments';
+    });
+
+    // Show/hide form based on presence of JWT
+    (function(){
+        try{
+            const token = getToken();
+            const form = document.getElementById('appointmentForm');
+            const prompt = document.getElementById('appointment-auth-prompt');
+            if (token && token.length>0) {
+                if (form) form.style.display = '';
+                if (prompt) prompt.style.display = 'none';
+            } else {
+                if (form) form.style.display = 'none';
+                if (prompt) prompt.style.display = '';
+            }
+        }catch(e){}
+    })();
+    </script>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import com.example.backend.model.Patient;
+import com.example.backend.model.Appointment;
+import com.example.backend.repository.PatientRepository;
+import com.example.backend.repository.AppointmentRepository;
 
 @Controller
 public class FrontendController {
@@ -27,14 +31,14 @@ public class FrontendController {
     }
 
     @GetMapping("/login")
-    public String loginGet() { return "login"; }
+    public String loginGet() { return "auth/login"; }
 
     @GetMapping("/patients")
     public String patientsPage(Model model) {
         ArrayList<Patient> list = new ArrayList<>();
         patientRepository.findAll().forEach(list::add);
         model.addAttribute("patients", list);
-        return "patients";
+        return "patients/list";
     }
 
     @GetMapping("/appointments")
@@ -42,14 +46,14 @@ public class FrontendController {
         ArrayList<Appointment> list = new ArrayList<>();
         appointmentRepository.findAll().forEach(list::add);
         model.addAttribute("appointments", list);
-        return "appointments";
+        return "appointments/list";
     }
 
     @GetMapping("/patients/new")
-    public String patientForm(Model model) { model.addAttribute("patient", new Patient()); return "patient_form"; }
+    public String patientForm(Model model) { model.addAttribute("patient", new Patient()); return "patients/form"; }
 
     @GetMapping("/appointments/new")
-    public String appointmentForm(Model model) { model.addAttribute("appointment", new Appointment()); model.addAttribute("patients", patientRepository.findAll()); return "appointment_form"; }
+    public String appointmentForm(Model model) { model.addAttribute("appointment", new Appointment()); model.addAttribute("patients", patientRepository.findAll()); return "appointments/form"; }
 
     @PostMapping("/patients")
     public String createPatientFromForm(@ModelAttribute Patient patient, RedirectAttributes attrs) {

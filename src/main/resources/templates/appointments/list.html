@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
-    <meta charset="UTF-8"/>
-    <title>Citas</title>
-    <link rel="stylesheet" type="text/css" href="/style.css">
+<meta charset="UTF-8"/>
+<title>Citas</title>
+<link rel="stylesheet" type="text/css" href="/css/style.css">
 </head>
 <body>
 <main class="card">
@@ -16,28 +16,27 @@
     <h2>Existing appointments</h2>
     <ul id="list"></ul>
     <nav>
-        <a href="/patients">Patients</a>
+        <a href="/patients">Pacientes</a>
     </nav>
+
     <script>
     function getToken() { return localStorage.getItem('jwt'); }
     function authHeader() { const t=getToken(); return t? { 'Authorization': t } : {}; }
 
     async function loadAppointments(){
-        const res = await fetch('/api/appointments', { headers: authHeader() });
+        const res = await fetch('/api/appointments', { headers: Object.assign({'Accept':'application/json'}, authHeader()) });
         if (!res.ok) { document.getElementById('list').innerText = 'Error: '+res.status; return; }
         const arr = await res.json();
         const ul = document.getElementById('list'); ul.innerHTML='';
-        arr.forEach(a=>{ const li=document.createElement('li'); li.innerText = `${a.id} - ${a.appointmentDateTime} - patient:${a.patient? a.patient.id : 'n/a'} - vet:${a.veterinarian}`; ul.appendChild(li); });
+        arr.forEach(p=>{ const li=document.createElement('li'); li.innerText = `${p.id} - ${p.appointmentDateTime} ${p.reason} (${p.veterinarian})`; ul.appendChild(li); });
     }
 
     loadAppointments();
     </script>
 
     <div style="margin-top:12px">
-        <a href="/">Volver al inicio</a>
+      <a href="/">Volver al inicio</a>
     </div>
     </main>
-</div>
-
 </body>
 </html>

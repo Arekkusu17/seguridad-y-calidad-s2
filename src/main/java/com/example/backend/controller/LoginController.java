@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import com.example.backend.auth.JWTAuthtenticationConfig;
+import com.example.backend.MyUserDetailsService;
 
 @RestController
 public class LoginController {
@@ -44,13 +47,11 @@ public class LoginController {
             throw new RuntimeException("Missing credentials");
         }
 
-        // authenticate via AuthenticationManager to establish server-side SecurityContext (create session)
         try {
             AuthenticationManager authManager = authenticationConfiguration.getAuthenticationManager();
             UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(uname, pwd);
             Authentication auth = authManager.authenticate(authReq);
             SecurityContextHolder.getContext().setAuthentication(auth);
-            // ensure HTTP session is created so Thymeleaf sec:authorize can read SecurityContext
             request.getSession(true);
         } catch (AuthenticationException ex) {
             return ResponseEntity.status(401).body("Invalid credentials");

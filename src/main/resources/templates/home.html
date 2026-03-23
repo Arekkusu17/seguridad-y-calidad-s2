@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
-<title>Getting Started: Serving Web Content</title>
+<title>Vet Backend</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link rel="stylesheet" type="text/css" href="/style.css">
+<link rel="stylesheet" type="text/css" href="/css/style.css">
 </head>
 </head>
 <body>
@@ -23,7 +23,7 @@
                 <span sec:authorize="isAuthenticated()">Usuario: <strong sec:authentication="name"></strong></span>
                 <span sec:authorize="isAnonymous()"> <a th:href="@{/login}">Login</a> </span>
                 <span sec:authorize="isAuthenticated()">
-                    <form th:action="@{/logout}" method="post" style="display:inline">
+                        <form th:action="@{/logout}" method="post" style="display:inline">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <button type="submit">Logout</button>
                     </form>

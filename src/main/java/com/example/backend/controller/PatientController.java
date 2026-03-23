@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import com.example.backend.model.Patient;
+import com.example.backend.repository.PatientRepository;
 
 @RestController
 @RequestMapping("/api/patients")

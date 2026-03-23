@@ -1,8 +1,9 @@
-package com.example.backend;
+package com.example.backend.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -10,12 +11,34 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.example.backend.auth.JWTAuthorizationFilter;
+
 @EnableWebSecurity()
 @Configuration
-class WebSecurityConfig{
+public class WebSecurityConfig{
 
     @Autowired
     JWTAuthorizationFilter jwtAuthorizationFilter;
+    
+        @Bean
+        @Order(1)
+        public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+                http
+                        .securityMatcher("/api/**")
+                        .csrf((csrf) -> csrf.disable())
+                        .authorizeHttpRequests((requests) -> requests
+                                .requestMatchers(HttpMethod.GET, "/api/patients").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/api/patients").hasAnyRole("USER", "VET", "ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/patients/delete/**").hasAnyRole("VET", "ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/appointments").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/api/appointments").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/appointments/delete/**").hasAnyRole("VET", "ADMIN")
+                                .anyRequest().authenticated()
+                        )
+                        .addFilterAfter(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+
+                return http.build();
+        }
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -28,17 +51,8 @@ class WebSecurityConfig{
                                 .requestMatchers(HttpMethod.GET, "/patients/new", "/appointments/new").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/patients").hasAnyRole("USER", "VET", "ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/appointments").authenticated()
-                                // Patient API
-                                .requestMatchers(HttpMethod.GET, "/api/patients").authenticated()
-                                .requestMatchers(HttpMethod.POST, "/api/patients").hasAnyRole("USER", "VET", "ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/api/patients/delete/**").hasAnyRole("VET", "ADMIN")
-                                // Appointment API
-                                .requestMatchers(HttpMethod.GET, "/api/appointments").authenticated()
-                                .requestMatchers(HttpMethod.POST, "/api/appointments").authenticated()
-                                .requestMatchers(HttpMethod.GET, "/api/appointments/delete/**").hasAnyRole("VET", "ADMIN")
                                 .anyRequest().authenticated()
-                        )
-                        .addFilterAfter(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+                        );
 
                 return http.build();
         }

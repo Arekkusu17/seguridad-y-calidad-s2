@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
     <title>Ejemplo Spring Security Login</title>
-    <link rel="stylesheet" type="text/css" href="/login.css">
+    <link rel="stylesheet" type="text/css" href="/css/login.css">
 </head>
 
 <body>
@@ -45,7 +45,8 @@
 
             const res = await fetch(form.action, {
                 method: 'POST',
-                body: data
+                body: data,
+                credentials: 'same-origin'
             });
 
             if (!res.ok) {

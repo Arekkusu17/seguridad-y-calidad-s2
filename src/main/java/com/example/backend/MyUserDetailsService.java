@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.example.backend.model.User;
 
 
 
@@ -23,7 +24,7 @@ public class MyUserDetailsService implements UserDetailsService {
         = LoggerFactory.getLogger(MyUserDetailsService.class);
 
     @Autowired
-    private UserRepository userRepository;
+    private com.example.backend.repository.UserRepository userRepository;
 
 
     @Override
